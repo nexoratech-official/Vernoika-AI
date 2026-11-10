@@ -5,6 +5,7 @@ import {
   Bot,
   Command,
   Brain,
+  Code2,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -24,6 +25,7 @@ const navigation = [
   { href: "/app/chat", label: "Chat", icon: MessageSquareText },
   { href: "/app/memory", label: "Memory", icon: Brain },
   { href: "/app/agents", label: "Agents", icon: Bot },
+  { href: "/app/developers", label: "Developers", icon: Code2 },
 ];
 
 const accountNavigation = [
@@ -194,6 +196,8 @@ export function AppShell({
                   ? "Memory"
                   : pathname.startsWith("/app/agents")
                     ? "Agents"
+                    : pathname.startsWith("/app/developers")
+                      ? "Developers"
                 : pathname.startsWith("/app/settings")
                   ? "Settings"
                   : pathname.startsWith("/app/profile")
