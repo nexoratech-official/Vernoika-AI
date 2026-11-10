@@ -840,6 +840,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 :root[data-theme="light"] .settings-delete-status, :root[data-theme="light"] .developer-status, :root[data-theme="light"] .agent-decision-note { color: #267455; }
 :root[data-theme="light"] .voice-session-status { color: #087c96; }
 :root[data-theme="light"] .settings-preview-note { border-color: var(--border-soft); color: #52677b; }
+:root[data-theme="light"] .dashboard-hero-card p { color: #9eb2c2; }
+:root[data-theme="light"] .dashboard-hero-card svg { color: #85dce9; }
+:root[data-theme="light"] .chat-toolbar { border-color: var(--border); background: #f5f8fb; }
+:root[data-theme="light"] .chat-agent strong, :root[data-theme="light"] .message-meta strong, :root[data-theme="light"] .suggestion-card strong { color: #1d3144; }
+:root[data-theme="light"] .chat-agent small, :root[data-theme="light"] .model-label, :root[data-theme="light"] .message-copy, :root[data-theme="light"] .composer-bottom > span { color: #52677b; }
+:root[data-theme="light"] .suggestion-card, :root[data-theme="light"] .message-user .message-body { border-color: var(--border); background: #ffffff; }
+:root[data-theme="light"] .suggestion-card > span:last-child { color: #52677b; }
+:root[data-theme="light"] .chat-composer textarea::placeholder { color: #667d91; }
 
 @media (max-width: 760px) {
   .developer-stat-grid { grid-template-columns: 1fr; gap: 0; }
