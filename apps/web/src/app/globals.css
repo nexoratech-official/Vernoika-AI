@@ -829,6 +829,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 :root[data-theme="light"] .api-docs-content p, :root[data-theme="light"] .api-docs-content li { color: #506579; }
 :root[data-theme="light"] .api-docs-content pre, :root[data-theme="light"] .api-docs-endpoint { border-color: var(--border); background: #fff; }
 :root[data-theme="light"] .api-docs-content pre code { color: #24394b; }
+:root[data-theme="light"] .eyebrow, :root[data-theme="light"] .eyebrow-light { color: #52677b; }
+:root[data-theme="light"] .workspace-content :is(h1, h2, h3, h4, h5, h6) { color: var(--text); }
+:root[data-theme="light"] .workspace-content p:not(.inline-error):not(.settings-delete-status):not(.developer-status):not(.agent-decision-note):not(.voice-session-status):not(.sidebar-action-error),
+:root[data-theme="light"] .workspace-content :is(small, time) { color: var(--muted); }
+:root[data-theme="light"] .workspace-content svg, :root[data-theme="light"] .icon-button { color: #52677b; }
+:root[data-theme="light"] .icon-button:hover { color: #1d3144; }
+:root[data-theme="light"] .button-secondary { border-color: var(--border); background: #fff; color: #40586c; }
+:root[data-theme="light"] .demo-pill, :root[data-theme="light"] .topbar-context { color: #52677b; }
+:root[data-theme="light"] .settings-delete-status, :root[data-theme="light"] .developer-status, :root[data-theme="light"] .agent-decision-note { color: #267455; }
+:root[data-theme="light"] .voice-session-status { color: #087c96; }
+:root[data-theme="light"] .settings-preview-note { border-color: var(--border-soft); color: #52677b; }
 
 @media (max-width: 760px) {
   .developer-stat-grid { grid-template-columns: 1fr; gap: 0; }
