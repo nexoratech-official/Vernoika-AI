@@ -171,7 +171,13 @@ export function DeveloperPanel({ databaseConnected }: { databaseConnected: boole
       setIssuedKey(issued);
       setTestKey(issued.secret);
       setKeyName("");
-      await loadData();
+      setKeys((current) => [key, ...current]);
+      try {
+        await loadData();
+      } catch {
+        setStatus("The key was created, but the list could not be refreshed. Reload the page to update it.");
+        return;
+      }
       setStatus("API key created. Copy the secret now; it will not be shown again.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "The API key could not be created.");
@@ -192,7 +198,15 @@ export function DeveloperPanel({ databaseConnected }: { databaseConnected: boole
       });
       const result: unknown = await response.json();
       if (!response.ok) throw new Error(readError(result, "The API key could not be revoked."));
-      await loadData();
+      setKeys((current) => current.map((item) =>
+        item.id === key.id ? { ...item, revoked_at: new Date().toISOString() } : item,
+      ));
+      try {
+        await loadData();
+      } catch {
+        setStatus(`API key "${key.name}" was revoked, but the list could not be refreshed.`);
+        return;
+      }
       setStatus(`API key "${key.name}" was revoked.`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "The API key could not be revoked.");

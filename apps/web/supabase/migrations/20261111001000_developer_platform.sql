@@ -65,6 +65,7 @@ grant select, insert on public.developer_apps to authenticated;
 grant select (
   id,
   app_id,
+  user_id,
   name,
   key_prefix,
   scopes,
@@ -77,6 +78,7 @@ grant select (
   request_id,
   api_key_id,
   app_id,
+  user_id,
   model,
   status,
   input_tokens,
@@ -102,6 +104,7 @@ revoke all on public.developer_api_keys from anon, authenticated;
 grant select (
   id,
   app_id,
+  user_id,
   name,
   key_prefix,
   scopes,
@@ -115,6 +118,7 @@ grant select (
   request_id,
   api_key_id,
   app_id,
+  user_id,
   model,
   status,
   input_tokens,

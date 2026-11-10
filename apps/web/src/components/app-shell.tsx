@@ -18,6 +18,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { BrandMark } from "./brand-mark";
+import { ThemeControl } from "./theme-control";
 import { signOutAction } from "@/app/actions/auth";
 
 const navigation = [
@@ -206,6 +207,7 @@ export function AppShell({
             </span>
           </div>
           <div className="topbar-right">
+            <ThemeControl />
             <span className={`demo-pill${aiConfigured ? " demo-pill-ready" : ""}`}>
               <span />{aiConfigured ? "AI gateway connected" : authenticated ? "AI setup needed" : "Preview environment"}
             </span>

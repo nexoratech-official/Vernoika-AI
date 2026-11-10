@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { BrandMark } from "./brand-mark";
+import { ThemeControl } from "./theme-control";
 import { signInAction, signUpAction } from "@/app/actions/auth";
 
 export function AuthForm({
@@ -58,9 +59,12 @@ export function AuthForm({
       <div className="auth-background-glow" aria-hidden="true" />
       <header className="auth-header">
         <Link href="/" aria-label="Vornokia home"><BrandMark /></Link>
-        <Link className="auth-back-link" href="/">
-          <ArrowLeft size={15} /> Back to home
-        </Link>
+        <div className="auth-header-actions">
+          <ThemeControl />
+          <Link className="auth-back-link" href="/">
+            <ArrowLeft size={15} /> Back to home
+          </Link>
+        </div>
       </header>
       <section className="auth-card" aria-labelledby="auth-title">
         <div className="auth-card-mark"><BrandMark compact /></div>

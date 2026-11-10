@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
+import { ThemeControl } from "@/components/theme-control";
 
 const capabilities = [
   {
@@ -43,6 +44,7 @@ export default function Home() {
           <Link href="/app">Workspace</Link>
         </nav>
         <div className="landing-header-actions">
+          <ThemeControl />
           <Link className="landing-signin" href="/login">Sign in</Link>
           <Link className="button button-primary landing-cta" href="/register">
             Get started <ArrowUpRight size={15} />

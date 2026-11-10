@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeControl } from "@/components/theme-control";
 
 const requestExample = `curl https://YOUR_VORNOKIA_ORIGIN/api/v1/chat/completions ^
   -H "Authorization: Bearer vno_live_YOUR_KEY" ^
@@ -7,7 +8,10 @@ const requestExample = `curl https://YOUR_VORNOKIA_ORIGIN/api/v1/chat/completion
 
 const sdkExample = `import { Vornokia } from "@vornokia/sdk";
 
-const vornokia = new Vornokia({ apiKey: process.env.VORNOKIA_API_KEY! });
+const vornokia = new Vornokia({
+  apiKey: process.env.VORNOKIA_API_KEY!,
+  baseURL: process.env.VORNOKIA_API_BASE_URL!,
+});
 const completion = await vornokia.chat.completions.create({
   messages: [{ role: "user", content: "Hello, Vornokia" }],
 });
@@ -19,7 +23,7 @@ export default function DeveloperDocsPage() {
     <main className="api-docs">
       <header className="api-docs-header">
         <Link href="/" className="api-docs-brand">VORNOKIA <span>DEVELOPERS</span></Link>
-        <Link className="button button-secondary" href="/app/developers">Developer dashboard</Link>
+        <div><ThemeControl /><Link className="button button-secondary" href="/app/developers">Developer dashboard</Link></div>
       </header>
       <article className="api-docs-content">
         <div className="eyebrow"><span /> API REFERENCE</div>

@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { readJsonBody } from "@/lib/http/read-json-body";
 import { getAuthenticatedContext, hasSameOrigin } from "@/lib/supabase/authenticated-context";
@@ -62,8 +62,7 @@ export async function POST(request: Request) {
   }
 
   const secret = `vno_live_${randomBytes(32).toString("base64url")}`;
-  const keyHash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(secret));
-  const hash = Buffer.from(keyHash).toString("hex");
+  const hash = createHash("sha256").update(secret).digest("hex");
   const { data, error } = await context.supabase.rpc("create_developer_api_key", {
     p_app_id: parsed.value.appId,
     p_name: name,

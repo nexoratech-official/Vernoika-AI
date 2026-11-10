@@ -218,6 +218,8 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
   const [voiceMode, setVoiceMode] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const voiceModeRef = useRef(false);
+  const recognitionTranscriptRef = useRef("");
   const speechRecognitionAvailable = useSyncExternalStore(
     subscribeToBrowserSupport,
     getSpeechRecognitionSupport,
@@ -245,10 +247,13 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
   }, [cameraStream]);
 
   useEffect(() => () => {
-    recognitionRef.current?.stop();
-    window.speechSynthesis?.cancel();
     cameraStream?.getTracks().forEach((track) => track.stop());
   }, [cameraStream]);
+  useEffect(() => () => {
+    voiceModeRef.current = false;
+    recognitionRef.current?.stop();
+    window.speechSynthesis?.cancel();
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -296,9 +301,18 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(content);
     utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      if (voiceModeRef.current) {
+        window.setTimeout(() => {
+          if (voiceModeRef.current) startListening(true);
+        }, 300);
+      }
+    };
     utterance.onerror = () => {
       setIsSpeaking(false);
+      voiceModeRef.current = false;
+      setVoiceMode(false);
       setError("Speech playback could not start in this browser.");
     };
     window.speechSynthesis.speak(utterance);
@@ -309,10 +323,12 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
     setIsSpeaking(false);
   }
 
-  function startListening() {
+  function startListening(autoSubmit = false) {
     const Recognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
     if (!Recognition) {
       setError("Speech recognition is not supported in this browser. You can still type a message.");
+      voiceModeRef.current = false;
+      setVoiceMode(false);
       return;
     }
     setError("");
@@ -320,12 +336,16 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
     recognition.lang = navigator.language || "en-US";
     recognition.continuous = false;
     recognition.interimResults = true;
-    const transcriptBase = input.trim();
+    recognitionTranscriptRef.current = "";
+    const transcriptBase = autoSubmit ? "" : input.trim();
     recognition.onresult = (event) => {
       const transcript = Array.from({ length: event.results.length }, (_, index) =>
         event.results[index][0]?.transcript ?? "",
       ).join(" ").trim();
-      if (transcript) setInput([transcriptBase, transcript].filter(Boolean).join(" "));
+      if (transcript) {
+        recognitionTranscriptRef.current = transcript;
+        setInput([transcriptBase, transcript].filter(Boolean).join(" "));
+      }
     };
     recognition.onerror = (event) => {
       const message = event.error === "not-allowed" || event.error === "service-not-allowed"
@@ -335,14 +355,30 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
           : `Speech recognition failed${event.error ? ` (${event.error})` : ""}.`;
       setError(message);
       setIsListening(false);
+      voiceModeRef.current = false;
+      setVoiceMode(false);
     };
-    recognition.onend = () => setIsListening(false);
+    recognition.onend = () => {
+      setIsListening(false);
+      const transcript = recognitionTranscriptRef.current.trim();
+      if (!autoSubmit || !voiceModeRef.current) return;
+      if (transcript) {
+        setInput("");
+        void sendMessage(transcript);
+      } else {
+        voiceModeRef.current = false;
+        setVoiceMode(false);
+        setError("No speech was detected. Turn voice conversation on when you are ready to try again.");
+      }
+    };
     recognitionRef.current = recognition;
     setIsListening(true);
     try {
       recognition.start();
     } catch {
       setIsListening(false);
+      voiceModeRef.current = false;
+      setVoiceMode(false);
       setError("The microphone could not be started. Check browser permissions and try again.");
     }
   }
@@ -350,6 +386,19 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
   function stopListening() {
     recognitionRef.current?.stop();
     setIsListening(false);
+  }
+
+  function toggleVoiceConversation() {
+    if (voiceModeRef.current) {
+      voiceModeRef.current = false;
+      setVoiceMode(false);
+      stopListening();
+      stopSpeaking();
+      return;
+    }
+    voiceModeRef.current = true;
+    setVoiceMode(true);
+    startListening(true);
   }
 
   async function processImages(event: ChangeEvent<HTMLInputElement>) {
@@ -580,6 +629,8 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
     } catch (sendError) {
       if (!messageSaved) setInput((current) => current || message);
       setError(sendError instanceof Error ? sendError.message : "The message could not be sent.");
+      voiceModeRef.current = false;
+      setVoiceMode(false);
     } finally {
       setIsLoading(false);
     }
@@ -607,6 +658,8 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
     stopSpeaking();
     stopListening();
     stopCamera();
+    voiceModeRef.current = false;
+    setVoiceMode(false);
   }
 
   async function copyMessage(message: Message) {
@@ -816,15 +869,16 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
               <button className={`button button-secondary media-control-button${cameraOpen ? " media-control-active" : ""}`} type="button" onClick={() => cameraOpen ? stopCamera() : void startCamera()} disabled={!aiConfigured || isProcessingAttachment || isLoading || images.length >= 2} aria-pressed={cameraOpen} aria-label={cameraOpen ? "Stop camera" : "Open camera"}>
                 <Camera size={14} /> {cameraOpen ? "Camera on" : "Camera"}
               </button>
-              <button className={`button button-secondary media-control-button${voiceMode ? " media-control-active" : ""}`} type="button" role="switch" aria-checked={voiceMode} aria-label="Voice conversation mode" onClick={() => setVoiceMode((value) => !value)}>
+              <button className={`button button-secondary media-control-button${voiceMode ? " media-control-active" : ""}`} type="button" role="switch" aria-checked={voiceMode} aria-label="Voice conversation mode" onClick={toggleVoiceConversation} disabled={!speechRecognitionAvailable || !aiConfigured || isLoading}>
                 <Volume2 size={14} /> Voice {voiceMode ? "on" : "off"}
               </button>
               {speechRecognitionAvailable && (
-                <button className={`button button-secondary media-control-button${isListening ? " media-control-active" : ""}`} type="button" onClick={() => isListening ? stopListening() : startListening()} disabled={isLoading || !aiConfigured} aria-pressed={isListening} aria-label={isListening ? "Stop microphone" : "Start microphone"}>
+                <button className={`button button-secondary media-control-button${isListening ? " media-control-active" : ""}`} type="button" onClick={() => isListening ? stopListening() : startListening(false)} disabled={isLoading || !aiConfigured || voiceMode} aria-pressed={isListening} aria-label={isListening ? "Stop microphone" : "Start microphone"}>
                   {isListening ? <Square size={13} /> : <Mic size={14} />} {isListening ? "Stop mic" : "Speak"}
                 </button>
               )}
             </div>
+            {voiceMode && <p className="voice-session-status" role="status">{isListening ? "Listening for your message…" : isSpeaking ? "Vornokia is speaking…" : isLoading ? "Vornokia is responding…" : "Voice conversation is active."} Select Voice on to stop the session.</p>}
             {isProcessingAttachment && <p className="configuration-notice" role="status">Preparing your attachment locally…</p>}
             {!speechRecognitionAvailable && <p className="configuration-notice">Speech input is not supported by this browser. You can still type and use read-aloud.</p>}
             <textarea
