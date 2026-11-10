@@ -26,6 +26,14 @@
 ## Privacy
 Collect the minimum information needed. Explain what is stored, why it is stored, and how users can delete it. Memory should be user-visible and controllable.
 
+## Desktop local-device controls
+- Allow native APIs only to the exact, build-time-configured HTTPS Vornokia origin; never use a wildcard or arbitrary runtime origin.
+- Start all local-device permissions disabled. Require an OS-native confirmation to enable each capability and a separate confirmation for each application launch.
+- Limit file access to native user-selected paths. Read only bounded text files; create new files exclusively and never overwrite or delete.
+- Launch only user-allowlisted executables without command-line arguments. Never expose a general shell, arbitrary command execution, or unrestricted keyboard/mouse automation.
+- Provide an emergency stop that immediately disables permissions and prevents subsequent local actions.
+- Do not persist file contents or forward them to the model until the user explicitly sends the attachment.
+
 ## Phase 2 implementation notes
 
 The web app verifies Supabase users on protected routes, refreshes cookie-backed sessions in Next.js Proxy, and enforces ownership through RLS. The AI API is available only to authenticated users, validates message length and conversation ownership, applies a database-backed rate limit, and stores conversation/usage data. The provider key is read only by the server-side model adapter.

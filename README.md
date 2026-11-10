@@ -19,6 +19,10 @@ npm run dev
 
 See [`apps/web/README.md`](./apps/web/README.md) for Supabase setup, database migration, model configuration, and validation commands. Never put provider secrets in browser code or commit `.env.local`.
 
+## Desktop app
+
+The Tauri v2 shell and local-device safety model are in [`apps/desktop/README.md`](./apps/desktop/README.md). Desktop release builds require a deployed HTTPS backend origin and target-platform testing.
+
 ## Project guide
 
 - `docs/PRODUCT_BRIEF.md` — product vision and MVP boundaries
@@ -29,5 +33,6 @@ See [`apps/web/README.md`](./apps/web/README.md) for Supabase setup, database mi
 - `docs/ROADMAP.md` — staged roadmap
 - `docs/WEB_IMPLEMENTATION_NOTES.md` — current web and AI core behavior
 - `apps/web/README.md` — local setup and service configuration
+- `apps/desktop/README.md` — Tauri desktop setup and device permissions
 
 The web app is not a public launch. Configure and verify the external services, security policies, and production deployment before inviting users.

@@ -28,11 +28,15 @@ Status: Prime and seven specialist roles are registered. Signed-in users can del
 ## Phase 5 — Voice and vision
 Add opt-in speech-to-text, text-to-speech, voice conversations, image/document input, and explicit media-permission controls.
 
+Status: Authenticated chat supports browser speech dictation/read-aloud, explicit camera capture, resized image input, and local extraction of PDF, DOCX, TXT, Markdown, CSV, and JSON. Media is request-scoped and bounded; persisted chat contains attachment labels only. Speech recognition and image understanding depend on browser/provider support. Preview chat remains simulated and does not include these capabilities.
+
 ## Phase 6 — Automation and tool execution
 Add an allowlisted tool registry, approved search/retrieval, document processing, authorized integrations, scheduled workflows, execution logs, and confirmations for sensitive actions.
 
 ## Phase 7 — Desktop and computer control
 Build a Tauri desktop client with permissioned local-device communication, approved file operations, application launching, emergency stop, and platform testing.
+
+Status: A Tauri v2 remote-app shell and a narrow native bridge are implemented. The bridge supports user-selected bounded text files, new-file-only saves, explicitly allowlisted app launches, session-only permissions, and an emergency stop. Windows `cargo check` passes. Production installer builds require the deployed HTTPS origin; installer and macOS/Linux validation remain pending.
 
 ## Phase 8 — Mobile applications
 Build Flutter clients for Android and iOS with account synchronization, voice, notifications, mobile agents, and device permission controls.

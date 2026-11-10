@@ -129,7 +129,7 @@ export function DesktopControlPanel() {
       if (!file) return;
       if (file.text.length > 16_000) throw new Error("The selected text exceeds the chat attachment limit.");
       setSelectedFile(file);
-      setNotice(`${file.name} is ready. It will only be sent if you attach it in chat and press Send.`);
+      setNotice(`${file.name} was read locally. Nothing was sent to Vornokia's AI provider.`);
     });
   }
 
@@ -148,7 +148,10 @@ export function DesktopControlPanel() {
   }
 
   async function launchApplication(id: string) {
-    await runAction(() => invoke("launch_approved_application", { applicationId: id }));
+    await runAction(async () => {
+      const launched = await invoke<boolean>("launch_approved_application", { applicationId: id });
+      if (launched) setNotice("The approved application was launched.");
+    });
   }
 
   async function removeApplication(id: string) {
@@ -183,7 +186,7 @@ export function DesktopControlPanel() {
 
       <div className="desktop-security-note">
         <LockKeyhole size={16} />
-        <p>These controls are provided by the signed desktop app. File access is limited to native file pickers; no arbitrary commands or keyboard/mouse automation are enabled. Permissions reset when the app closes.</p>
+        <p>These controls are available only in the Tauri desktop app. File access is limited to native file pickers; no arbitrary commands or keyboard/mouse automation are enabled. Permissions reset when the app closes.</p>
       </div>
 
       <div className="settings-list">

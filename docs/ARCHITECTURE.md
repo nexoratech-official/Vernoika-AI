@@ -50,3 +50,6 @@ The next migration, `apps/web/supabase/migrations/20261110230800_memory_personal
 
 ## Portability
 Keep business logic independent from hosting-specific APIs where practical. Keep database migrations in source control. Use environment variables for provider and infrastructure configuration.
+
+## Desktop client
+The Tauri v2 desktop package in `apps/desktop` loads the authenticated web application from a build-time-configured HTTPS origin. It grants the native bridge only to that exact origin; the backend and model gateway remain server-side. Local-device operations are narrow Rust commands, protected by session-only permissions, OS-native file selection/confirmation, and an emergency stop. The desktop app does not expose a general shell or filesystem plugin to web content.

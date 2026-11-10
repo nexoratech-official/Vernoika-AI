@@ -31,6 +31,12 @@ Memory is authored and managed by the user; it is not extracted automatically fr
 
 Prime coordinates seven specialist agents. Tasks and Prime/specialist messages are saved to the user's account. Agents only return model-generated recommendations; they cannot run tools or external actions. Approve/decline records the user's review and does not execute an action.
 
+## Phase 5 voice and vision
+
+Authenticated chat supports browser speech recognition for dictation and browser speech synthesis for spoken replies. Microphone and camera are user-initiated; browser speech recognition may use the browser's configured speech provider. Images are resized in the browser and sent, with locally extracted PDF/DOCX/plain-text-compatible content, to the configured model gateway for the current request. The API caps request size, attachment counts, image data, and extracted text. The database stores attachment labels/placeholders, not media or extracted document contents.
+
+The local preview chat remains simulated and does not support voice, image understanding, document analysis, or external model requests. These capabilities are available only in authenticated chat with a configured model provider; image understanding additionally requires a vision-capable model. PDF text extraction does not OCR scanned pages.
+
 ## Configuration and remaining operations
 
 Copy `.env.example` to `apps/web/.env.local`, configure the Supabase project and model provider, then apply both database migrations in timestamp order. Configure Supabase Auth's site URL and redirect allowlist for `/auth/callback`. Keep `AI_API_KEY` server-only; never add secrets to public or client environment variables.
