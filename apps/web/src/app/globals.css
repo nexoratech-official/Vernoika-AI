@@ -643,3 +643,31 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .composer-bottom > span { max-width: 55%; line-height: 1.5; }
   .message-actions { gap: 9px; }
 }
+
+.desktop-control-card { margin-top: 0; }
+.desktop-security-note { display: flex; align-items: flex-start; gap: 9px; margin: 14px 0 6px; padding: 10px; border: 1px solid rgba(84, 214, 238, .13); border-radius: 7px; background: rgba(15, 54, 68, .18); color: #82cbd7; }
+.desktop-security-note > svg { flex: 0 0 auto; margin-top: 1px; }
+.desktop-security-note p, .desktop-tool-card > p { margin: 0; color: #8ca1b2; font-size: 8px; line-height: 1.6; }
+.desktop-action-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.desktop-stop-button { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; }
+.desktop-stop-state { display: flex; align-items: center; gap: 7px; margin: 0; color: #e39ba4; font-size: 8px; line-height: 1.5; }
+.desktop-tools-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 15px; }
+.desktop-tool-card { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 9px; padding: 12px; border: 1px solid rgba(153, 182, 203, .1); border-radius: 8px; background: rgba(5, 15, 25, .35); }
+.desktop-tool-heading { display: flex; align-items: center; gap: 7px; color: #9bd6df; }
+.desktop-tool-heading strong { color: #c8d5df; font-size: 9px; font-weight: 600; }
+.desktop-tool-card > .button { min-height: 30px; padding: 0 9px; font-size: 8px; }
+.desktop-save-label { color: #9baebe; font-size: 8px; }
+.desktop-file-content { width: 100%; min-height: 78px; padding: 8px; border: 1px solid #263d52; border-radius: 6px; background: #091827; color: #d7e2eb; font-size: 9px; line-height: 1.5; resize: vertical; }
+.desktop-file-content:disabled { opacity: .5; }
+.desktop-file-preview { width: 100%; color: #91a4b5; font-size: 8px; }
+.desktop-file-preview summary { cursor: pointer; }
+.desktop-file-preview pre { max-height: 180px; overflow: auto; padding: 8px; border-radius: 5px; background: rgba(3, 10, 17, .7); color: #b7c8d6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.desktop-approved-app { display: flex; width: 100%; min-width: 0; align-items: center; gap: 5px; padding: 5px 0; border-top: 1px solid rgba(153, 182, 203, .08); }
+.desktop-approved-app > span { flex: 1; overflow: hidden; color: #adbdcb; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.desktop-approved-app .icon-button { width: 26px; height: 26px; }
+.desktop-empty-apps { margin: 0; color: #73899c; font-size: 8px; }
+
+@media (max-width: 680px) {
+  .desktop-tools-grid { grid-template-columns: 1fr; }
+  .desktop-action-row { align-items: flex-start; flex-direction: column; }
+}

@@ -4,6 +4,7 @@ import { Brain, Eye, LockKeyhole, ShieldCheck, SlidersHorizontal, Sparkles } fro
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { saveMessages } from "@/lib/conversation-store";
+import { DesktopControlPanel } from "@/components/desktop-control-panel";
 
 type Preferences = {
   memory_enabled: boolean;
@@ -146,6 +147,8 @@ export function SettingsPanel({ databaseConnected }: { databaseConnected: boolea
         <h1>Settings</h1>
         <p>Thoughtful defaults, with you in control.</p>
       </div>
+
+      <DesktopControlPanel />
 
       <div className="settings-card">
         <div className="settings-card-heading">

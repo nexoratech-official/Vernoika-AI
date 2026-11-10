@@ -6,10 +6,12 @@ import {
   Camera,
   Clipboard,
   FileUp,
+  FileText,
   ImagePlus,
   Mic,
   Plus,
   Send,
+  Save,
   Square,
   Sparkles,
   Volume2,
@@ -18,6 +20,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { invoke, isTauri } from "@tauri-apps/api/core";
 import type { Message } from "@/lib/conversation-store";
 
 type ImageAttachment = { id: string; name: string; dataUrl: string };
@@ -69,6 +72,10 @@ function subscribeToBrowserSupport() {
 
 function getSpeechRecognitionSupport() {
   return typeof window !== "undefined" && Boolean(window.SpeechRecognition ?? window.webkitSpeechRecognition);
+}
+
+function getDesktopSupport() {
+  return typeof window !== "undefined" && isTauri();
 }
 
 const starters = [
@@ -203,6 +210,7 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState("");
+  const [desktopNotice, setDesktopNotice] = useState("");
   const [copiedId, setCopiedId] = useState("");
   const [images, setImages] = useState<ImageAttachment[]>([]);
   const [documents, setDocuments] = useState<DocumentAttachment[]>([]);
@@ -213,6 +221,11 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
   const speechRecognitionAvailable = useSyncExternalStore(
     subscribeToBrowserSupport,
     getSpeechRecognitionSupport,
+    () => false,
+  );
+  const desktopAvailable = useSyncExternalStore(
+    subscribeToBrowserSupport,
+    getDesktopSupport,
     () => false,
   );
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
@@ -606,6 +619,41 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
     }
   }
 
+  async function attachDesktopTextFile() {
+    if (documents.length >= 2) {
+      setError("Attach no more than two documents to one message.");
+      return;
+    }
+    setError("");
+    setDesktopNotice("");
+    try {
+      const file = await invoke<{ name: string; text: string } | null>("read_selected_text_file");
+      if (!file) return;
+      if (file.text.length > maxDocumentTextLength) {
+        throw new Error("The selected text exceeds the 16,000-character attachment limit.");
+      }
+      setDocuments((current) => [...current, {
+        id: crypto.randomUUID(),
+        name: file.name,
+        text: file.text,
+      }].slice(0, 2));
+      setDesktopNotice(`${file.name} is attached. It will be sent only if you press Send.`);
+    } catch (fileError) {
+      setError(typeof fileError === "string" ? fileError : fileError instanceof Error ? fileError.message : "The selected file could not be attached.");
+    }
+  }
+
+  async function saveAssistantMessage(message: Message) {
+    setError("");
+    setDesktopNotice("");
+    try {
+      const savedName = await invoke<string | null>("save_new_text_file", { content: message.content });
+      if (savedName) setDesktopNotice(`Saved new file: ${savedName}.`);
+    } catch (saveError) {
+      setError(typeof saveError === "string" ? saveError : saveError instanceof Error ? saveError.message : "The new file could not be saved.");
+    }
+  }
+
   const isEmpty = isReady && messages.length === 0;
 
   return (
@@ -694,6 +742,11 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
                         <button className="message-copy" type="button" aria-label={`Read aloud message from Prime`} onClick={() => speakText(message.content)}>
                           <Volume2 size={14} /> Read aloud
                         </button>
+                        {desktopAvailable && (
+                          <button className="message-copy" type="button" onClick={() => void saveAssistantMessage(message)}>
+                            <Save size={14} /> Save new file
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -712,6 +765,7 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
 
         <div className="composer-wrap">
           {error && <p className="inline-error" role="alert">{error}</p>}
+          {desktopNotice && <p className="settings-delete-status" role="status">{desktopNotice}</p>}
           {!aiConfigured && (
             <p className="configuration-notice" role="status">
               Set AI_BASE_URL, AI_API_KEY, and AI_MODEL on the server to enable live chat.
@@ -754,6 +808,11 @@ export function LiveChatPanel({ aiConfigured }: { aiConfigured: boolean }) {
               <button className="button button-secondary media-control-button" type="button" onClick={() => documentInputRef.current?.click()} disabled={!aiConfigured || isProcessingAttachment || isLoading || documents.length >= 2} aria-label="Attach documents">
                 <FileUp size={14} /> Document
               </button>
+              {desktopAvailable && (
+                <button className="button button-secondary media-control-button" type="button" onClick={() => void attachDesktopTextFile()} disabled={!aiConfigured || isProcessingAttachment || isLoading || documents.length >= 2} aria-label="Attach a local text file">
+                  <FileText size={14} /> Local file
+                </button>
+              )}
               <button className={`button button-secondary media-control-button${cameraOpen ? " media-control-active" : ""}`} type="button" onClick={() => cameraOpen ? stopCamera() : void startCamera()} disabled={!aiConfigured || isProcessingAttachment || isLoading || images.length >= 2} aria-pressed={cameraOpen} aria-label={cameraOpen ? "Stop camera" : "Open camera"}>
                 <Camera size={14} /> {cameraOpen ? "Camera on" : "Camera"}
               </button>
