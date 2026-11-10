@@ -616,3 +616,30 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .response-style-row { flex-wrap: wrap; }
   .response-style-row .response-style-select { margin-left: 39px; }
 }
+.multimodal-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 3px 0 9px; border-bottom: 1px solid rgba(153, 182, 203, .08); }
+.media-control-button { min-height: 28px; padding: 0 8px; font-size: 8px; }
+.media-control-button:disabled { opacity: .48; cursor: not-allowed; }
+.media-control-active { border-color: rgba(84, 214, 238, .4); background: rgba(35, 101, 121, .24); color: #a4e7ef; }
+.attachment-preview-list, .document-attachment-list { display: flex; flex-wrap: wrap; gap: 7px; padding: 2px 0 9px; }
+.image-attachment-preview { position: relative; display: flex; width: min(170px, 46%); min-width: 0; align-items: center; gap: 7px; padding: 5px 25px 5px 5px; border: 1px solid rgba(153, 182, 203, .15); border-radius: 6px; background: rgba(7, 18, 30, .65); }
+.image-attachment-preview img { width: 38px; height: 38px; flex: 0 0 38px; border-radius: 4px; object-fit: cover; }
+.image-attachment-preview > span, .document-attachment-chip > span { min-width: 0; overflow: hidden; color: #a8b8c6; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.image-attachment-preview .icon-button, .document-attachment-chip .icon-button { position: absolute; top: 50%; right: 2px; width: 22px; height: 22px; transform: translateY(-50%); }
+.document-attachment-chip { position: relative; display: flex; min-width: 0; align-items: center; gap: 6px; padding: 5px 27px 5px 8px; border: 1px solid rgba(153, 182, 203, .15); border-radius: 6px; background: rgba(7, 18, 30, .65); }
+.document-attachment-chip > svg { flex: 0 0 auto; color: #8bcbd8; }
+.camera-capture-panel { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid rgba(153, 182, 203, .11); background: rgba(5, 15, 25, .6); }
+.camera-capture-panel video { width: min(240px, 40%); max-height: 180px; border-radius: 7px; background: #02070c; object-fit: cover; }
+.camera-capture-actions { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 7px; }
+.camera-capture-actions > span { width: 100%; color: #8fa0b1; font-size: 8px; }
+.camera-capture-actions .button { min-height: 29px; padding: 0 8px; font-size: 8px; }
+.message-actions { display: flex; flex-wrap: wrap; gap: 11px; }
+.chat-disclaimer { line-height: 1.6; }
+
+@media (max-width: 540px) {
+  .multimodal-controls { gap: 5px; }
+  .media-control-button { min-height: 29px; padding: 0 6px; }
+  .camera-capture-panel { align-items: stretch; flex-direction: column; }
+  .camera-capture-panel video { width: 100%; max-height: 220px; }
+  .composer-bottom > span { max-width: 55%; line-height: 1.5; }
+  .message-actions { gap: 9px; }
+}

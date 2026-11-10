@@ -57,6 +57,16 @@ Memory is disabled by default and is never inferred from chat automatically. Whe
 
 The agent registry contains Prime and seven specialists. Specialist tasks are limited to text recommendations through the configured model gateway, recorded in the user's account, and require explicit review. Agents have no tools or external-action permissions; approving a recommendation records the user's decision and does not execute it.
 
+## Voice, image, and document input
+
+These features are available in authenticated chat only. The local preview chat remains simulated and does not support voice, image understanding, document analysis, or external model requests.
+
+The authenticated chat supports browser speech recognition for dictation and browser speech synthesis for spoken replies. Microphone access is requested only after the user presses the microphone control. Speech-recognition audio may be processed by the browser's configured speech provider; synthesized playback runs through the browser. Voice mode still leaves sending the recognized text to the user.
+
+Image and camera controls are explicit. Images are resized in the browser, limited to two per request, and sent to the configured model gateway; configure a model that supports image inputs for image understanding. Camera capture requests video-only access after the user presses Camera, and the camera stream stops after capture or when closed.
+
+PDF text, DOCX text, TXT, Markdown, CSV, and JSON files are extracted locally before sending. Each document is limited to 3 MB and extracted text to 16,000 characters; at most two images and two documents can be attached per message. Files and image data are not stored in the account. Extracted document text and image contents are sent to the configured AI provider for the current request; attachment names, but not contents, are recorded in the saved message. Scanned PDFs without selectable text need a vision-capable model and an image of the relevant page.
+
 ## Checks
 
 ```powershell
