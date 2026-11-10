@@ -675,6 +675,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .theme-control { display: inline-flex; min-height: 34px; align-items: center; gap: 7px; padding: 0 9px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface-soft); color: var(--muted); }
 .theme-control svg { flex: 0 0 auto; color: var(--cyan); }
 .theme-control select { min-width: 70px; border: 0; background: transparent; color: inherit; font-size: 13px; cursor: pointer; }
+.theme-control-compact { gap: 5px; padding: 0 7px; }
+.theme-control-compact select { min-width: 50px; font-size: 12px; }
 .theme-control select:focus-visible { outline-offset: 1px; }
 .landing-header-actions .theme-control { margin-right: 1px; }
 .auth-header-actions { display: flex; align-items: center; gap: 17px; }
@@ -838,6 +840,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 @media (max-width: 540px) {
   .auth-header-actions { gap: 8px; }
+  .auth-header { padding-right: 14px; padding-left: 14px; }
   .auth-back-link { font-size: 12px; }
   .theme-control { min-height: 32px; gap: 5px; padding: 0 7px; }
   .theme-control select { min-width: 64px; font-size: 12px; }
@@ -847,4 +850,5 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .api-docs { padding-right: 18px; padding-left: 18px; }
   .api-docs-content { margin-top: 38px; }
   .api-docs-content section { margin-top: 32px; }
+  .topbar-context-label { display: none; }
 }

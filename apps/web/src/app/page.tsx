@@ -44,7 +44,7 @@ export default function Home() {
           <Link href="/app">Workspace</Link>
         </nav>
         <div className="landing-header-actions">
-          <ThemeControl />
+          <ThemeControl compact />
           <Link className="landing-signin" href="/login">Sign in</Link>
           <Link className="button button-primary landing-cta" href="/register">
             Get started <ArrowUpRight size={15} />

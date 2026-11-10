@@ -29,7 +29,7 @@ function applyTheme(preference: ThemePreference) {
   window.dispatchEvent(new Event(changeEvent));
 }
 
-export function ThemeControl() {
+export function ThemeControl({ compact = false }: { compact?: boolean }) {
   const [preference, setPreference] = useState<ThemePreference>("system");
   const [status, setStatus] = useState("");
 
@@ -73,7 +73,7 @@ export function ThemeControl() {
   }
 
   return (
-    <label className="theme-control">
+    <label className={`theme-control${compact ? " theme-control-compact" : ""}`}>
       <SunMoon size={16} aria-hidden="true" />
       <span className="sr-only">Color theme</span>
       <select aria-label="Color theme" value={preference} onChange={(event) => changePreference(event.target.value)}>

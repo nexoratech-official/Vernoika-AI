@@ -56,7 +56,7 @@ export default function DeveloperDocsPage() {
           <h2>Limits and usage</h2>
           <ul>
             <li>Each key is limited to 10 requests per minute and 10,000 requests per calendar month.</li>
-            <li>Each application can have up to five active keys. Revoke a key immediately from the dashboard if it is exposed.</li>
+            <li>Each application can have up to five active keys, with ten active keys maximum per account. Revoke a key immediately from the dashboard if it is exposed.</li>
             <li>Limits apply per key. The initial developer tier meters requests and model-reported tokens; it does not charge money.</li>
             <li>Requests use the configured Vornokia model gateway. Provider availability and provider usage policies still apply.</li>
           </ul>

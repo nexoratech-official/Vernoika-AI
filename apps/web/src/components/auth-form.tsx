@@ -60,7 +60,7 @@ export function AuthForm({
       <header className="auth-header">
         <Link href="/" aria-label="Vornokia home"><BrandMark /></Link>
         <div className="auth-header-actions">
-          <ThemeControl />
+          <ThemeControl compact />
           <Link className="auth-back-link" href="/">
             <ArrowLeft size={15} /> Back to home
           </Link>

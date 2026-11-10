@@ -167,6 +167,17 @@ begin
     raise exception 'Application not found' using errcode = 'P0002';
   end if;
 
+  perform 1 from auth.users
+  where auth.users.id = current_user_id
+  for update;
+  select count(*) into active_key_count
+  from public.developer_api_keys
+  where developer_api_keys.user_id = current_user_id
+    and developer_api_keys.revoked_at is null;
+  if active_key_count >= 10 then
+    raise exception 'An account can have at most ten active API keys' using errcode = '54000';
+  end if;
+
   select count(*) into active_key_count
   from public.developer_api_keys
   where developer_api_keys.app_id = p_app_id

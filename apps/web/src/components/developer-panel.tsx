@@ -24,6 +24,11 @@ type DeveloperUsage = {
   monthly_limit_per_key: number;
 };
 type IssuedKey = DeveloperKey & { secret: string };
+type DeveloperData = {
+  apps: DeveloperApp[];
+  keys: DeveloperKey[];
+  usage: DeveloperUsage | null;
+};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -52,6 +57,12 @@ function isDeveloperKey(value: unknown): value is DeveloperKey {
     typeof value.created_at === "string" &&
     (typeof value.last_used_at === "string" || value.last_used_at === null) &&
     (typeof value.revoked_at === "string" || value.revoked_at === null);
+}
+
+function isIssuedKey(value: unknown): value is IssuedKey {
+  return isRecord(value) &&
+    typeof value.secret === "string" &&
+    isDeveloperKey(value);
 }
 
 function isUsage(value: unknown): value is DeveloperUsage {
@@ -85,8 +96,7 @@ export function DeveloperPanel({ databaseConnected }: { databaseConnected: boole
 
   const loadData = useCallback(async () => {
     if (!databaseConnected) {
-      setIsReady(true);
-      return;
+      return { apps: [], keys: [], usage: null } satisfies DeveloperData;
     }
     const [appsResponse, keysResponse] = await Promise.all([
       fetch("/api/developer/apps", { cache: "no-store" }),
@@ -104,25 +114,42 @@ export function DeveloperPanel({ databaseConnected }: { databaseConnected: boole
     }
     const loadedApps = appsResult.apps.filter(isDeveloperApp);
     const loadedKeys = keysResult.keys.filter(isDeveloperKey);
-    setApps(loadedApps);
-    setKeys(loadedKeys);
-    setUsage(isRecord(keysResult.usage) && isUsage(keysResult.usage) ? keysResult.usage : null);
+    return {
+      apps: loadedApps,
+      keys: loadedKeys,
+      usage: isRecord(keysResult.usage) && isUsage(keysResult.usage) ? keysResult.usage : null,
+    } satisfies DeveloperData;
+  }, [databaseConnected]);
+
+  const applyData = useCallback((data: DeveloperData) => {
+    setApps(data.apps);
+    setKeys(data.keys);
+    setUsage(data.usage);
     setSelectedAppId((current) =>
-      loadedApps.some((app) => app.id === current) ? current : loadedApps[0]?.id ?? "",
+      data.apps.some((app) => app.id === current) ? current : data.apps[0]?.id ?? "",
     );
     setIsReady(true);
-  }, [databaseConnected]);
+  }, []);
+
+  const refreshData = useCallback(async () => {
+    applyData(await loadData());
+  }, [applyData, loadData]);
 
   useEffect(() => {
     let active = true;
-    void loadData().catch((error: unknown) => {
-      if (active) {
-        setStatus(error instanceof Error ? error.message : "Developer data could not be loaded.");
-        setIsReady(true);
+    void (async () => {
+      try {
+        const data = await loadData();
+        if (active) applyData(data);
+      } catch (error) {
+        if (active) {
+          setStatus(error instanceof Error ? error.message : "Developer data could not be loaded.");
+          setIsReady(true);
+        }
       }
-    });
+    })();
     return () => { active = false; };
-  }, [loadData]);
+  }, [applyData, loadData]);
 
   async function registerApp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -163,7 +190,7 @@ export function DeveloperPanel({ databaseConnected }: { databaseConnected: boole
       });
       const result: unknown = await response.json();
       const key = isRecord(result) ? result.key : undefined;
-      if (!response.ok || !isRecord(key) || !isDeveloperKey(key) || typeof key.secret !== "string") {
+      if (!response.ok || !isIssuedKey(key)) {
         throw new Error(readError(result, "The API key could not be created."));
       }
       const secret = key.secret;
@@ -173,7 +200,7 @@ export function DeveloperPanel({ databaseConnected }: { databaseConnected: boole
       setKeyName("");
       setKeys((current) => [key, ...current]);
       try {
-        await loadData();
+        await refreshData();
       } catch {
         setStatus("The key was created, but the list could not be refreshed. Reload the page to update it.");
         return;
@@ -202,7 +229,7 @@ export function DeveloperPanel({ databaseConnected }: { databaseConnected: boole
         item.id === key.id ? { ...item, revoked_at: new Date().toISOString() } : item,
       ));
       try {
-        await loadData();
+        await refreshData();
       } catch {
         setStatus(`API key "${key.name}" was revoked, but the list could not be refreshed.`);
         return;
@@ -299,7 +326,7 @@ export function DeveloperPanel({ databaseConnected }: { databaseConnected: boole
         <article className="settings-card developer-stat">
           <span><KeyRound size={16} /> Active keys</span>
           <strong>{usage?.active_keys ?? activeKeys.length}</strong>
-          <small>Up to five active keys per application</small>
+          <small>Up to five keys per app · ten active keys per account</small>
         </article>
         <article className="settings-card developer-stat">
           <span><Code2 size={16} /> Token usage</span>

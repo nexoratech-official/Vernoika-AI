@@ -74,7 +74,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "The selected application was not found." }, { status: 404 });
     }
     if (error.code === "54000") {
-      return NextResponse.json({ error: "Each application can have at most five active API keys." }, { status: 409 });
+      return NextResponse.json({ error: "The active API-key limit is five per application and ten per account." }, { status: 409 });
     }
     console.error("vornokia_developer_api_key_create_failed", { code: error.code });
     return NextResponse.json({ error: "The API key could not be created." }, { status: 500 });

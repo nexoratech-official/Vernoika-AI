@@ -18,9 +18,10 @@ Open [http://localhost:3000](http://localhost:3000). Without service configurati
 ## Configure Supabase
 
 1. Create a Supabase project and copy its project URL and anon/publishable key to `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `apps/web/.env.local`.
-2. Apply both migrations in timestamp order using the Supabase SQL editor or Supabase CLI:
+2. Apply all migrations in timestamp order using the Supabase SQL editor or Supabase CLI:
    - [`20261110223000_vornokia_ai_core.sql`](./supabase/migrations/20261110223000_vornokia_ai_core.sql)
    - [`20261110230800_memory_personalization_agents.sql`](./supabase/migrations/20261110230800_memory_personalization_agents.sql)
+   - [`20261111001000_developer_platform.sql`](./supabase/migrations/20261111001000_developer_platform.sql)
 3. Configure the Supabase Auth site URL and redirect allowlist for your app origin, including `/auth/callback`.
 4. Set `APP_URL` to the app's origin.
 
@@ -47,11 +48,21 @@ The endpoint must support bearer authentication, streaming chat completions, `ma
 - `/app/settings` — opt-in memory retrieval, response preferences, and confirmed chat-history deletion
 - `/app/memory` — inspect, add, edit, export, and delete user-controlled memories
 - `/app/agents` — specialist registry, Prime handoffs, task progress, and recommendation approvals
+- `/app/developers` — register developer apps, manage scoped API keys, view metered usage, and test requests
+- `/developers/docs` — public API reference
 - `/api/chat` — authenticated conversation read and streaming endpoint
 - `/api/conversations` — authenticated chat-history deletion
 - `/api/preferences` and `/api/memories` — owner-scoped personalization controls
 - `/api/agents/tasks` — bounded specialist delegation and communication history
 - `/api/agents/tasks/approval` — records a user's approval or rejection of a recommendation
+- `/api/developer/apps` and `/api/developer/keys` — authenticated app and API-key management
+- `/api/v1/chat/completions` — versioned API-key-authenticated Vornokia Prime endpoint; supports JSON and SSE
+
+The developer endpoint accepts only text `user`/`assistant` messages and the `chat:generate` scope. New keys are generated with cryptographic randomness, stored only as SHA-256 hashes, and shown once. They are limited to 10 requests/minute and 10,000 requests/calendar month per key, with up to five active keys per application and ten per account. Usage metering is enabled; payment processing and billing are not configured. API prompt and response content is not persisted as conversation history. The TypeScript SDK source is in `../../packages/sdk` and is not yet published to a package registry.
+
+Theme controls are available on the landing, authentication, workspace, and API documentation pages. System theme follows the operating-system preference; an explicit light or dark preference is stored in this browser.
+
+Voice conversation mode starts speech recognition after the user enables it, sends each captured utterance to the authenticated chat API, reads the reply aloud, and resumes listening. It is browser-dependent and remains user-controlled; selecting Voice off stops recognition and speech playback. The microphone is requested only after the user explicitly starts voice mode or speech input.
 
 Memory is disabled by default and is never inferred from chat automatically. When enabled, lexical matching selects a small set of relevant, user-authored memories for chat context. The short-term context is limited to recent messages in the selected conversation. Preview-mode memory and preferences stay in browser storage and are not sent to a model.
 

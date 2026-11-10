@@ -89,9 +89,16 @@ export async function authorizeDeveloperApiKey(
     return { response: publicApiError("The developer API is temporarily unavailable.", 503, "service_unavailable") };
   }
 
-  const { data, error } = await supabase.rpc("consume_developer_api_key", {
-    p_key_hash: keyHash,
-  });
+  let rpcResult;
+  try {
+    rpcResult = await supabase.rpc("consume_developer_api_key", {
+      p_key_hash: keyHash,
+    });
+  } catch {
+    console.error("vornokia_developer_api_key_check_unavailable");
+    return { response: publicApiError("API key verification is temporarily unavailable.", 503, "service_unavailable") };
+  }
+  const { data, error } = rpcResult;
   if (error) {
     console.error("vornokia_developer_api_key_check_failed", { code: error.code });
     return { response: publicApiError("API key verification is temporarily unavailable.", 503, "service_unavailable") };

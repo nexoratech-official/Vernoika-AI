@@ -159,7 +159,7 @@ class ChatCompletionsClient {
   create(params: ChatCompletionParams & { stream?: false }): Promise<ChatCompletion>;
   create(
     params: ChatCompletionParams & { stream?: boolean },
-  ): Promise<ChatCompletion> | AsyncGenerator<ChatCompletionChunk> {
+  ): Promise<ChatCompletion> | AsyncIterable<ChatCompletionChunk> {
     return params.stream ? this.stream(params) : this.complete(params);
   }
 

@@ -82,23 +82,29 @@ async function recordUsage(
   inputTokens: number | null,
   outputTokens: number | null,
 ) {
-  const { data, error } = await access.supabase.rpc("record_developer_api_usage", {
-    p_key_hash: access.keyHash,
-    p_request_id: requestId,
-    p_model: model,
-    p_status: status,
-    p_input_tokens: inputTokens,
-    p_output_tokens: outputTokens,
-  });
-  if (error || data !== true) {
+  try {
+    const { data, error } = await access.supabase.rpc("record_developer_api_usage", {
+      p_key_hash: access.keyHash,
+      p_request_id: requestId,
+      p_model: model,
+      p_status: status,
+      p_input_tokens: inputTokens,
+      p_output_tokens: outputTokens,
+    });
+    if (!error && data === true) return true;
     console.error("vornokia_developer_api_usage_write_failed", {
       code: error?.code ?? (data === true ? undefined : "missing_result"),
       apiKeyId: access.apiKeyId,
       requestId,
     });
     return false;
+  } catch {
+    console.error("vornokia_developer_api_usage_write_unavailable", {
+      apiKeyId: access.apiKeyId,
+      requestId,
+    });
+    return false;
   }
-  return true;
 }
 
 function publicCompletion(
@@ -235,6 +241,7 @@ export async function POST(request: Request) {
   const decoder = new TextDecoder();
   const usage: ProviderUsage = { content: "", inputTokens: null, outputTokens: null, finishReason: "stop" };
   const reader = providerResponse.body.getReader();
+  let streamCancelled = false;
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const emit = (value: unknown) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(value)}\n\n`));
@@ -247,7 +254,7 @@ export async function POST(request: Request) {
       });
       let buffer = "";
       try {
-        while (true) {
+        while (!streamCancelled) {
           const { value, done } = await reader.read();
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
@@ -261,6 +268,7 @@ export async function POST(request: Request) {
             }
           }
         }
+        if (streamCancelled) return;
         buffer += decoder.decode();
         if (buffer) {
           const before = usage.content.length;
@@ -289,6 +297,7 @@ export async function POST(request: Request) {
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));
         controller.close();
       } catch {
+        if (streamCancelled) return;
         await recordUsage(access, requestId, publicModel, "error", usage.inputTokens, usage.outputTokens);
         console.error("vornokia_developer_api_stream_failed", { apiKeyId: access.apiKeyId, requestId });
         emit({ error: { message: "The model provider returned an invalid or incomplete response.", type: "server_error", code: "provider_error" } });
@@ -296,6 +305,7 @@ export async function POST(request: Request) {
       }
     },
     async cancel() {
+      streamCancelled = true;
       abortController.abort();
       await reader.cancel();
     },

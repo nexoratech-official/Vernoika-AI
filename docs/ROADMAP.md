@@ -28,7 +28,7 @@ Status: Prime and seven specialist roles are registered. Signed-in users can del
 ## Phase 5 — Voice and vision
 Add opt-in speech-to-text, text-to-speech, voice conversations, image/document input, and explicit media-permission controls.
 
-Status: Authenticated chat supports browser speech dictation/read-aloud, explicit camera capture, resized image input, and local extraction of PDF, DOCX, TXT, Markdown, CSV, and JSON. Media is request-scoped and bounded; persisted chat contains attachment labels only. Speech recognition and image understanding depend on browser/provider support. Preview chat remains simulated and does not include these capabilities.
+Status: Authenticated chat supports browser speech dictation, hands-free voice conversation with read-aloud, explicit camera capture, resized image input, and local extraction of PDF, DOCX, TXT, Markdown, CSV, and JSON. Media is request-scoped and bounded; persisted chat contains attachment labels only. Speech recognition and image understanding depend on browser/provider support. Preview chat remains simulated and does not include these capabilities.
 
 ## Phase 6 — Automation and tool execution
 Add an allowlisted tool registry, approved search/retrieval, document processing, authorized integrations, scheduled workflows, execution logs, and confirmations for sensitive actions.
@@ -46,6 +46,8 @@ Integrate Home Assistant and selected Matter-compatible devices. Add discovery, 
 
 ## Phase 10 — Developer platform and API
 Add developer registration, API key management, documentation, SDK, testing tools, limits, billing foundations, and scoped app permissions.
+
+Status: An initial developer portal supports app registration, one-time SHA-256-hashed `chat:generate` keys, revocation, per-key request quotas, usage metering, an API test panel, a public API reference, and a TypeScript SDK source package. Payments, SDK registry publication, and wider permission scopes remain pending.
 
 ## Phase 11 — Marketplace and ecosystem
 Add reviewed agent/integration publishing, version management, ratings, security disclosures, and creator/developer profiles.

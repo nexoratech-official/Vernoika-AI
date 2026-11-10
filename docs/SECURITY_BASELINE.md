@@ -13,6 +13,8 @@
 - Log security-relevant events without logging secrets or unnecessary personal content.
 - Provide account data export and deletion processes.
 - Never expose model credentials in browser bundles, logs, route responses, or public environment variables.
+- Generate developer API keys with a cryptographically secure random source; persist only a one-way hash, reveal secrets once, scope keys to the minimum API permissions, and support immediate revocation.
+- Enforce developer API quotas atomically in the database; meter usage without storing API prompt or response content by default.
 - Require confirmation before deleting all conversation and usage history.
 
 ## Future agent/tool security
@@ -25,6 +27,13 @@
 
 ## Privacy
 Collect the minimum information needed. Explain what is stored, why it is stored, and how users can delete it. Memory should be user-visible and controllable.
+
+## Developer API
+- Public API keys are independent of browser login sessions and must never be embedded in browser/mobile application bundles.
+- The initial public scope is `chat:generate`; user-provided `system` messages, tool execution, marketplace actions, and external integrations are not exposed by the API.
+- API key hashes are not selectable by authenticated users. Key management is performed through owner-checked database functions.
+- The key-consumption function enforces per-minute and calendar-month quotas atomically. Rejected/invalid requests can consume an authorized key's request allowance.
+- Meter request outcomes and provider-reported token counts, not prompt or completion content. Billing is not enabled by this initial implementation.
 
 ## Desktop local-device controls
 - Allow native APIs only to the exact, build-time-configured HTTPS Vornokia origin; never use a wildcard or arbitrary runtime origin.
