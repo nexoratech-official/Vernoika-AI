@@ -2,6 +2,7 @@
 
 import {
   ArrowUpRight,
+  AudioLines,
   Bot,
   Command,
   Brain,
@@ -24,6 +25,7 @@ import { signOutAction } from "@/app/actions/auth";
 const navigation = [
   { href: "/app", label: "Overview", icon: LayoutDashboard },
   { href: "/app/chat", label: "Chat", icon: MessageSquareText },
+  { href: "/app/voice-vision", label: "Voice & Vision", icon: AudioLines },
   { href: "/app/memory", label: "Memory", icon: Brain },
   { href: "/app/agents", label: "Agents", icon: Bot },
   { href: "/app/developers", label: "Developers", icon: Code2 },
@@ -193,6 +195,8 @@ export function AppShell({
             <span className="topbar-context-current">
               {pathname.startsWith("/app/chat")
                 ? "Chat"
+                : pathname.startsWith("/app/voice-vision")
+                  ? "Voice & Vision"
                 : pathname.startsWith("/app/memory")
                   ? "Memory"
                   : pathname.startsWith("/app/agents")
